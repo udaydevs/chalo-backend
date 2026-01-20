@@ -8,14 +8,18 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from django.http import Http404
+from dj_rest_auth.registration.views import SocialLoginView
+from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from apps.users.api.serializers import (
     LoginUserSerializer,
     RegistrationSerializer,
     UserSerializer,
 )
 from common.services.github_service import github_access_data, github_user_details
+from config import settings
 CustomUser = get_user_model()
-
 
 class Registration(APIView):
     """
@@ -39,13 +43,25 @@ class GitHubRegistration(APIView):
         """
         User registeration with github
         """
-        code = json.loads(request.body)
-        data =github_user_details(github_access_data(code.get('code')))
-        serializer = RegistrationSerializer(data = data)
-        if serializer.is_valid():
-            serializer.save()
+        code = request.data.get("code")
+        data =github_user_details(github_access_data(code))
+        if data:
             return Response({'msg' : 'Logged In Successfully'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error' : 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
+
+class GoogleRegistration(APIView):
+    """
+    User details and creation takes place using github
+    """
+    def post(self, request):
+        """
+        User registeration with github
+        """
+        code = request.data.get("code")
+        data =github_user_details(github_access_data(code))
+        if data:
+            return Response({'msg' : 'Logged In Successfully'}, status=status.HTTP_201_CREATED)
+        return Response({'error' : 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
 class Login(APIView):
     """Login for user"""
@@ -126,3 +142,15 @@ class UserDetails(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class GitHubLogin(SocialLoginView):
+    """This will help to get access token from github"""
+    adapter_class = GitHubOAuth2Adapter
+    client_class = OAuth2Client
+    callback_url = settings.GITHUB_CALLBACK_URL
+
+class GoogleLogin(SocialLoginView):
+    """This will help to get access token from google"""
+    adapter_class = GoogleOAuth2Adapter
+    client_class = OAuth2Client
+    callback_url = settings.GITHUB_CALLBACK_URL
