@@ -1,6 +1,6 @@
 """Users Authentication views"""
 # pylint: disable=E1101
-import json
+
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -14,10 +14,14 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from apps.users.api.serializers import (
     LoginUserSerializer,
+    OTPVerificationSerializer,
+    PasswordResetRequestSerializer,
+    PasswordResetSerializer,
     RegistrationSerializer,
     UserSerializer,
 )
 from common.services.github_service import github_access_data, github_user_details
+from common.services.google_service import google_access_data, google_user_details
 from config import settings
 CustomUser = get_user_model()
 
@@ -58,7 +62,7 @@ class GoogleRegistration(APIView):
         User registeration with github
         """
         code = request.data.get("code")
-        data =github_user_details(github_access_data(code))
+        data =google_user_details(google_access_data(code))
         if data:
             return Response({'msg' : 'Logged In Successfully'}, status=status.HTTP_201_CREATED)
         return Response({'error' : 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
@@ -142,15 +146,60 @@ class UserDetails(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class PasswordResetRequest(APIView):
+    """
+    User details and creation takes place here
+    """
+    def post(self, request):
+        """
+        User post request for registration
+        """
+        serializer = PasswordResetRequestSerializer(data  = request.data)
+        if serializer.is_valid():
+            return Response({
+                'msg' : 'OTP sent successfully!' ,
+                "reset_id" : serializer.data.values()
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class OTPVerification(APIView):
+    """
+    User details and creation takes place here
+    """
+    def post(self, request):
+        """
+        User post request for registration
+        """
+        serializer = OTPVerificationSerializer(data  = request.data)
+        if serializer.is_valid():
+            return Response({'msg' : 'Otp verification successfully' }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PasswordReset(APIView):
+    """
+    User details and creation takes place here
+    """
+    def post(self, request):
+        """
+        User post request for registration
+        """
+        print(request.data)
+        serializer = PasswordResetSerializer(data  = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg' : 'Password reset successfully' }, status=status.HTTP_200_OK)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class GitHubLogin(SocialLoginView):
-    """This will help to get access token from github"""
+    """This will help to take access token from github and register user"""
     adapter_class = GitHubOAuth2Adapter
     client_class = OAuth2Client
     callback_url = settings.GITHUB_CALLBACK_URL
 
 class GoogleLogin(SocialLoginView):
-    """This will help to get access token from google"""
+    """This will help to take access token from google and register user"""
     adapter_class = GoogleOAuth2Adapter
     client_class = OAuth2Client
-    callback_url = settings.GITHUB_CALLBACK_URL
+    callback_url = settings.GOOGLE_CALLBACK_URL

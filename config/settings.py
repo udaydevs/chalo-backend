@@ -16,26 +16,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-REST_USE_JWT = True
-REST_AUTH_TOKEN_MODEL = None
-
-JWT_AUTH_COOKIE = "access-token"
-JWT_AUTH_REFRESH_COOKIE = "refresh-token"
-JWT_AUTH_HTTPONLY = True
-JWT_AUTH_SAMESITE = "None"
-JWT_AUTH_SECURE = True
-
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
-}
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+
 }
 
 INSTALLED_APPS = [
@@ -46,19 +34,36 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "rest_framework.authtoken",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "rest_framework.authtoken",
     "allauth.socialaccount.providers.github",
     'allauth.socialaccount.providers.google',
     "dj_rest_auth",
     "dj_rest_auth.registration",
     "apps.users",
 ]
+
+
+REST_FRAMEWORK = {
+    "NON_FIELD_ERRORS_KEY": "error",
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
+
+REST_AUTH = {
+    "USE_JWT" : True,
+    "JWT_AUTH_COOKIE" : "access_token",
+    "JWT_AUTH_REFRESH_COOKIE" : "refresh_token",
+    "JWT_AUTH_HTTPONLY" : True,
+    "JWT_AUTH_SAMESITE" : "None",
+    "JWT_AUTH_SECURE" : True
+}
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -111,8 +116,9 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "https://chalo-ten.vercel.app/"
+LOGOUT_REDIRECT_URL = "https://chalo-ten.vercel.app/"
+
 
 ACCOUNT_LOGIN_METHOD = {"username"}
 ACCOUNT_SIGNUP_FIELDS = ["username*", "email*", "password1*", "password2*"]
@@ -127,6 +133,13 @@ GOOGLE_CALLBACK_URL = os.getenv('GOOGLE_CALLBACK_URL')
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 GITHUB_CALLBACK_URL = os.getenv('GITHUB_CALLBACK_URL')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 SOCIALACCOUNT_PROVIDERS = {
     "github": {
@@ -143,26 +156,32 @@ SOCIALACCOUNT_PROVIDERS = {
         "APPS":[
             {
                 "client_id" : GOOGLE_CLIENT_ID,
-                "client_secret" : GOOGLE_CLIENT_SECRET
+                "client_secret" : GOOGLE_CLIENT_SECRET,
+                "key" : ""
             }
         ],
         "SCOPE" : ["email"],
-        "AUTH_PARAMS" : {"allow_signup" : "true"}
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
     }
 }
 
 SITE_ID = 1
 
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
-USE_TZ = True
+USE_TZ = False
 
 STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://chalo-ten.vercel.app",
+    "http://localhost:3000"
+]
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
