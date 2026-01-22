@@ -78,7 +78,11 @@ class PasswordResetRequestSerializer(serializers.Serializer):
                 "error_detail" : error
             })
         user.generate_otp()
-        send_reset_otp(user)
+        send_reset_otp.delay({
+            "email": str(user.email),
+            "otp": str(user.otp),
+            "expiry": str(user.otp_exp),
+        })
         return user.id
 
 class OTPVerificationSerializer(serializers.Serializer):
