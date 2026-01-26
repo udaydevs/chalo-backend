@@ -8,7 +8,7 @@ def github_user_details(token):
     user_details = requests.post(
         "http://chalo-backend.onrender.com/dj-rest-auth/social/login/github/",
         json={"access_token": token},
-        timeout=20
+        # timeout=20
     )
     user_details.raise_for_status()
     return {'msg' : 'Logged In Successfully'}
@@ -25,7 +25,7 @@ def github_access_data(code:str):
             "client_secret": settings.GITHUB_CLIENT_SECRET,
             "code": code,
         },
-        timeout=20
+        # timeout=20
     )
     token_res.raise_for_status()
     return token_res.json().get('access_token')
