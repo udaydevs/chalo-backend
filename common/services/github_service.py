@@ -6,7 +6,7 @@ from django.conf import settings
 def github_user_details(token):
     """This will take access token and fetch user details"""
     user_details = requests.post(
-        "http://chalo-backend.onrender.com/dj-rest-auth/social/login/github/",
+        "https://chalo-backend.onrender.com/dj-rest-auth/social/login/github/",
         json={"access_token": token},
         # timeout=20
     )
