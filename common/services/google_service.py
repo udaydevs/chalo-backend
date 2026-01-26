@@ -7,7 +7,7 @@ def google_user_details(token):
     """This will take access token and fetch user details"""
     print( "token",token)
     user_details = requests.post(
-            "http://localhost:8000/dj-rest-auth/social/login/google/",
+            "http://chalo-backend.onrender.com/dj-rest-auth/social/login/google/",
             json={"access_token": token},
             timeout=20
         )
