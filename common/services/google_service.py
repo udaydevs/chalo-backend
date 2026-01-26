@@ -2,7 +2,6 @@
 import requests
 from django.conf import settings
 
-
 def google_user_details(token):
     """This will take access token and fetch user details"""
     print( "token",token)
@@ -12,8 +11,6 @@ def google_user_details(token):
             # timeout=20
         )
     return user_details.json()
-
-
 
 def google_access_data(code:str):
     """This will authorize from github and fetch access token"""
