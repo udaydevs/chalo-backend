@@ -1,11 +1,8 @@
 """
 Party related models are defined here
 """
-
-from datetime import timedelta
-import random
 import uuid
-from django.db import IntegrityError, models
+from django.db import  models
 from django.utils import timezone
 from apps.users.models import CustomUser
 

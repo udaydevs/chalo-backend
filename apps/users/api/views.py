@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.http import Http404
 from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+# from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from apps.users.api.serializers import (
     LoginUserSerializer,
@@ -21,7 +21,7 @@ from apps.users.api.serializers import (
     UserSerializer,
 )
 from common.services.github_service import github_access_data, github_user_details
-from common.services.google_service import google_access_data, google_user_details
+# from common.services.google_service import google_access_data, google_user_details
 from config import settings
 CustomUser = get_user_model()
 

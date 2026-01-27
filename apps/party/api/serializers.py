@@ -85,10 +85,13 @@ class JoinPartySerializer(serializers.ModelSerializer):
         if party.is_expired:
             raise serializers.ValidationError("Party has expired")
 
-        if PartyMembers.objects.filter(party=party, member=user).exists():
+        if Party.objects.filter(code=party, leader=user).exists():
+            raise serializers.ValidationError("Already joined this party as a leader")
+
+        if PartyMembers.objects.filter(member=user).exists():
             raise serializers.ValidationError("Already joined this party")
 
-        self.context["party"] = party
+        self.context["code"] = party
         return value
 
     def create(self, validated_data):
