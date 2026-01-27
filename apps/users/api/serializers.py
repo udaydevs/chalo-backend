@@ -64,6 +64,7 @@ class LoginUserSerializer(serializers.Serializer):
         user = authenticate(**attrs)
         if user and user.is_active:
             return user
+
         raise serializers.ValidationError("Incorrect credentials!")
 
 class PasswordResetRequestSerializer(serializers.Serializer):

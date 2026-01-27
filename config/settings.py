@@ -46,14 +46,15 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "dj_rest_auth.registration",
     "apps.users",
+    "apps.party",
 ]
 
 
 REST_FRAMEWORK = {
     "NON_FIELD_ERRORS_KEY": "error",
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "apps.users.authentication.CookieJWTAuthentication",
+    ],
 }
 
 REST_AUTH = {
@@ -187,13 +188,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = [
     "https://chalo.aadijain.dev",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "http://192.168.1.23:3000",
+    "https://6ff147c71172.ngrok-free.app"
 ]
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     'https://accounts.google.com',
     'https://chalo.aadijain.dev',
+    "http://localhost:3000",
+    "http://192.168.1.23:3000",
+    "https://6ff147c71172.ngrok-free.app"
 ]
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True

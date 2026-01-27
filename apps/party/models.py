@@ -1,37 +1,42 @@
 """
 Party related models are defined here
 """
+
+from datetime import timedelta
 import random
+import uuid
 from django.db import IntegrityError, models
+from django.utils import timezone
 from apps.users.models import CustomUser
 
 class Party(models.Model):
     """
     Model which store the details of users with the party
     """
-    party_leader = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    party_name = models.CharField(max_length='20')
-    party_description = models.CharField(max_length='250')
-    party_code = models.CharField(max_length='6', unique=True, editable=False)
+    class PartyDuration(models.IntegerChoices):
+        """Choices for party duration"""
+        H1  = 60,   "1 Hour"
+        H2  = 120,  "2 Hours"
+        H4  = 240,  "4 Hours"
+        H8  = 480,  "8 Hours"
+        D1  = 1440, "1 Day"
+        D3  = 4320, "3 Days"
 
-    def save(self, *args, **kwargs):
-        while True:
-            self.party_code = self._generate_party_code()
-            try:
-                super().save(*args, **kwargs)
-                break
-            except IntegrityError:
-                self.party_code = None
-        if self.party_code:
-            return super().save(*args, **kwargs)
-
-    def _generate_party_code(self):
-        """Function to generate team code """
-        char_list = list("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
-        team_code = ''
-        for _ in range(6):
-            team_code = team_code + random.choice(char_list)
-        return team_code
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    duration = models.PositiveSmallIntegerField(
+        choices=PartyDuration.choices,
+        db_index=True
+    )
+    leader = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=20)
+    code = models.CharField(max_length=6, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(
+        db_index=True
+    )
+    @property
+    def is_expired(self) -> bool:
+        return timezone.now() >= self.expires_at
 
 class PartyMembers(models.Model):
     """

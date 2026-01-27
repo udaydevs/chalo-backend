@@ -25,6 +25,7 @@ from common.services.google_service import google_access_data, google_user_detai
 from config import settings
 CustomUser = get_user_model()
 
+
 class Registration(APIView):
     """
     User details and creation takes place here
@@ -53,19 +54,26 @@ class GitHubRegistration(APIView):
             return Response({'msg' : 'Logged In Successfully'}, status=status.HTTP_201_CREATED)
         return Response({'error' : 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
-class GoogleRegistration(APIView):
-    """
-    User details and creation takes place using github
-    """
-    def post(self, request):
-        """
-        User registeration with github
-        """
-        code = request.data.get("code")
-        data =google_user_details(google_access_data(code))
-        if data:
-            return Response({'msg' : 'Logged In Successfully'}, status=status.HTTP_201_CREATED)
-        return Response({'error' : 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
+# class GoogleRegistration(APIView):
+#     """
+#     User details and creation takes place using github
+#     """
+#     def post(self, request):
+#         """
+#         User registeration with github
+#         """
+#         code = request.data.get("code")
+#         print(code)
+#         access_token = google_access_data(code)
+#         request.data.update({'access_token': access_token})
+#         login_view = GoogleLogin.as_view()
+#         response= login_view(request._request)
+#         print(response)
+#         # return response
+#         # data =google_user_details(google_access_data(code))
+#         if response:
+#             return Response({'msg' : 'Logged In Successfully'}, status=status.HTTP_201_CREATED)
+#         return Response({'error' : 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
 class Login(APIView):
     """Login for user"""
@@ -198,8 +206,32 @@ class GitHubLogin(SocialLoginView):
     client_class = OAuth2Client
     callback_url = settings.GITHUB_CALLBACK_URL
 
-class GoogleLogin(SocialLoginView):
-    """This will help to take access token from google and register user"""
-    adapter_class = GoogleOAuth2Adapter
-    client_class = OAuth2Client
-    callback_url = settings.GOOGLE_CALLBACK_URL
+# class GoogleRegistration(SocialLoginView):
+    # adapter_class = GoogleOAuth2Adapter
+    # client_class = OAuth2Client
+    # callback_url = settings.GOOGLE_CALLBACK_URL
+
+    # def post(self, request, *args, **kwargs):
+    #     code = request.data.get("code")
+    #     if not code:
+    #         return Response({'error': 'Code is required'}, status=status.HTTP_400_BAD_REQUEST)
+            #     google_data = google_access_data(code)
+    #     access_token = google_data.get('access_token')
+
+    #     if hasattr(request.data, '_mutable'):
+    #         request.data._mutable = True
+
+    #     request.data['access_token'] = access_token
+
+    #     self.serializer = self.get_serializer(data=request.data)
+    #     self.serializer.is_valid(raise_exception=True)
+
+    #     adapter = self.adapter_class(self.request)
+    #     app = adapter.get_app(self.request)
+    #     token = adapter.parse_token({'access_token': access_token})
+    #     token.token_secret = google_data.get('id_token') # Store id_token here
+
+    #     login = adapter.complete_login(request, app, token, response=google_data)
+    #     login.token = token
+    #     login.state = SocialLoginView.get_social_login(adapter, app, token, google_data)
+    #     return super().post(request, *args, **kwargs)
