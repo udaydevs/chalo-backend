@@ -6,7 +6,7 @@ from rest_framework import serializers
 from django.utils import timezone
 from django.db import IntegrityError, transaction
 from apps.party.models import Party, PartyMembers
-
+from django.db.models import Q
 
 class PartyRegistrationSerializer(serializers.ModelSerializer):
     """This serializer is for the creation of party"""
@@ -76,7 +76,6 @@ class JoinPartySerializer(serializers.ModelSerializer):
         Docstring for validate_code
         """
         user = self.context["request"].user
-
         try:
             party = Party.objects.get(code=value)
         except Party.DoesNotExist as e:
@@ -85,12 +84,8 @@ class JoinPartySerializer(serializers.ModelSerializer):
         if party.is_expired:
             raise serializers.ValidationError("Party has expired")
 
-        if Party.objects.filter(code=party, leader=user).exists():
-            raise serializers.ValidationError("Already joined this party as a leader")
-
-        if PartyMembers.objects.filter(member=user).exists():
+        if PartyMembers.objects.filter(Q(member=user)|Q( party__leader=user)).exists():
             raise serializers.ValidationError("Already joined this party")
-
         self.context["code"] = party
         return value
 

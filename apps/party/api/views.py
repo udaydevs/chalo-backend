@@ -18,7 +18,10 @@ class Party(APIView):
         serializer = PartyRegistrationSerializer(data=request.data, context={"request":request})
         if serializer.is_valid():
             serializer.save()
-            return Response({'msg' : 'Party created Successfully' }, status=status.HTTP_201_CREATED)
+            return Response({
+                'msg' : 'Party created Successfully',
+                'id' : serializer.data.get('id')
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class JoinParty(APIView):
