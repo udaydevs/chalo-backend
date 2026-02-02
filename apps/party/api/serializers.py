@@ -5,8 +5,8 @@ from datetime import timedelta
 from rest_framework import serializers
 from django.utils import timezone
 from django.db import IntegrityError, transaction
-from apps.party.models import Party, PartyMembers
 from django.db.models import Q
+from apps.party.models import Party, PartyMembers
 
 class PartyRegistrationSerializer(serializers.ModelSerializer):
     """This serializer is for the creation of party"""

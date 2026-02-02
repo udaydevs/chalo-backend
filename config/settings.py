@@ -18,8 +18,8 @@ ALLOWED_HOSTS = ['*']
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=59),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
@@ -189,7 +189,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://chalo.aadijain.dev",
     "http://localhost:3000",
     "http://192.168.1.23:3000",
-    "https://6ff147c71172.ngrok-free.app"
+    "https://6ff147c71172.ngrok-free.app",
+    "https://chalo-ten.vercel.app"
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -198,7 +199,24 @@ CSRF_TRUSTED_ORIGINS = [
     'https://chalo.aadijain.dev',
     "http://localhost:3000",
     "http://192.168.1.23:3000",
-    "https://6ff147c71172.ngrok-free.app"
+    "https://6ff147c71172.ngrok-free.app",
+    "https://chalo-ten.vercel.app"
 ]
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'None'
+
+# Additional CORS settings
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]

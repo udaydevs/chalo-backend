@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.exceptions import InvalidToken
 from django.contrib.auth import get_user_model
 from django.http import Http404
 from dj_rest_auth.registration.views import SocialLoginView
@@ -89,14 +91,18 @@ class Login(APIView):
                     value=str(token.access_token),
                     httponly=True,
                     secure=True,
-                    samesite="None"
+                    samesite="None",
+                    path="/",
+                    max_age=3600,
                 )
             response.set_cookie(
                     key="refresh_token",
                     value=str(token),
                     httponly=True,
                     secure=True,
-                    samesite="None"
+                    samesite="None",
+                    path="/",
+                    max_age=172800,
                 )
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -125,6 +131,7 @@ class LogOut(APIView):
         response = Response({"msg" : "Successfully logged out!"}, status=status.HTTP_200_OK)
         response.delete_cookie('access_token')
         response.delete_cookie('refresh_token')
+        return response
 
 class UserDetails(APIView):
     """Options that are performed on a single user """
@@ -198,6 +205,35 @@ class PasswordReset(APIView):
             return Response({'msg' : 'Password reset successfully' }, status=status.HTTP_200_OK)
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CookieTokenRefreshView(TokenRefreshView):
+    """Api route to refresh access token"""
+    def post(self, request):
+        """This is the post route"""
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response({
+                "error":"Refresh token not provided"
+            }, status= status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            refresh = RefreshToken(refresh_token)
+            access_token = str(refresh.access_token)
+
+            response = Response({
+                "message": "Access token token refreshed successfully"
+            },
+                status=status.HTTP_200_OK
+            )
+            response.set_cookie(key="access_token", 
+                                value=access_token,
+                                httponly=True,
+                                secure=True,
+                                samesite="None")
+            return response
+        except InvalidToken:
+            return Response({"error":"Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class GitHubLogin(SocialLoginView):

@@ -21,7 +21,6 @@ class CookieJWTAuthentication(JWTAuthentication):
         try:
             user = self.get_user(validated_token)
             print(user)
-        except AuthenticationFailed as exc:
-            raise AuthenticationFailed(f"User retrieval failed: {exc}")
-
-        return (user, validated_token)
+            return (user, validated_token)
+        except InvalidToken:
+            return None
