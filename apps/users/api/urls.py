@@ -4,6 +4,7 @@ from django.urls import path
 
 from apps.users.api.views import (
     CookieTokenRefreshView,
+    GoogleRegistration,
     Login,
     OTPVerification,
     PasswordReset,
@@ -19,7 +20,7 @@ urlpatterns = [
     path('user-info/', UserDetails.as_view()),
     path("github/callback/", GitHubRegistration.as_view()),
     path("refresh/", CookieTokenRefreshView.as_view(), name="token-refresh"),
-    # path("google/callback/", GoogleRegistration.as_view()),
+    path("google/callback/", GoogleRegistration.as_view()),
     path('password-reset/request/', PasswordResetRequest.as_view()),
     path('password-reset/verify-otp/', OTPVerification.as_view()),
     path('password-reset/change-password/', PasswordReset.as_view())

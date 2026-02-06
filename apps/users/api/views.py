@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 from django.http import Http404
 from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
-# from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from apps.users.api.serializers import (
     LoginUserSerializer,
@@ -85,15 +85,13 @@ class Login(APIView):
         if serializer.is_valid():
             user = serializer.validated_data
             token = RefreshToken.for_user(user)
-            response =Response({'msg' : 'Logged In Successfully' }, status=status.HTTP_201_CREATED)
+            response =Response({'msg' : 'Logged In Successfully' }, status=status.HTTP_200_OK)
             response.set_cookie(
                     key="access_token",
                     value=str(token.access_token),
                     httponly=True,
                     secure=True,
                     samesite="None",
-                    path="/",
-                    max_age=3600,
                 )
             response.set_cookie(
                     key="refresh_token",
@@ -101,8 +99,6 @@ class Login(APIView):
                     httponly=True,
                     secure=True,
                     samesite="None",
-                    path="/",
-                    max_age=172800,
                 )
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -242,32 +238,8 @@ class GitHubLogin(SocialLoginView):
     client_class = OAuth2Client
     callback_url = settings.GITHUB_CALLBACK_URL
 
-# class GoogleRegistration(SocialLoginView):
-    # adapter_class = GoogleOAuth2Adapter
-    # client_class = OAuth2Client
-    # callback_url = settings.GOOGLE_CALLBACK_URL
-
-    # def post(self, request, *args, **kwargs):
-    #     code = request.data.get("code")
-    #     if not code:
-    #         return Response({'error': 'Code is required'}, status=status.HTTP_400_BAD_REQUEST)
-            #     google_data = google_access_data(code)
-    #     access_token = google_data.get('access_token')
-
-    #     if hasattr(request.data, '_mutable'):
-    #         request.data._mutable = True
-
-    #     request.data['access_token'] = access_token
-
-    #     self.serializer = self.get_serializer(data=request.data)
-    #     self.serializer.is_valid(raise_exception=True)
-
-    #     adapter = self.adapter_class(self.request)
-    #     app = adapter.get_app(self.request)
-    #     token = adapter.parse_token({'access_token': access_token})
-    #     token.token_secret = google_data.get('id_token') # Store id_token here
-
-    #     login = adapter.complete_login(request, app, token, response=google_data)
-    #     login.token = token
-    #     login.state = SocialLoginView.get_social_login(adapter, app, token, google_data)
-    #     return super().post(request, *args, **kwargs)
+class GoogleRegistration(SocialLoginView):
+    """This will take code from the frontend and create a user"""
+    adapter_class = GoogleOAuth2Adapter
+    client_class = OAuth2Client
+    callback_url = settings.GOOGLE_CALLBACK_URL
