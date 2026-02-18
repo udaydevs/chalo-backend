@@ -42,19 +42,19 @@ class Registration(APIView):
             return Response({'msg' : 'Registered Successfully' }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class GitHubRegistration(APIView):
-    """
-    User details and creation takes place using github
-    """
-    def post(self, request):
-        """
-        User registeration with github
-        """
-        code = request.data.get("code")
-        data =github_user_details(github_access_data(code))
-        if data:
-            return Response({'msg' : 'Logged In Successfully'}, status=status.HTTP_201_CREATED)
-        return Response({'error' : 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
+# class GitHubRegistration(APIView):
+#     """
+#     User details and creation takes place using github
+#     """
+#     def post(self, request):
+#         """
+#         User registeration with github
+#         """
+#         code = request.data.get("code")
+#         data =github_user_details(github_access_data(code))
+#         if data:
+#             return Response({'msg' : 'Logged In Successfully'}, status=status.HTTP_201_CREATED)
+#         return Response({'error' : 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
 # class GoogleRegistration(APIView):
 #     """
@@ -232,7 +232,7 @@ class CookieTokenRefreshView(TokenRefreshView):
             return Response({"error":"Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-class GitHubLogin(SocialLoginView):
+class GitHubRegistration(SocialLoginView):
     """This will help to take access token from github and register user"""
     adapter_class = GitHubOAuth2Adapter
     client_class = OAuth2Client
