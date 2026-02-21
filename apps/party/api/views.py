@@ -1,4 +1,5 @@
 """Party Views are defined here"""
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -76,8 +77,6 @@ class PartyInfo(APIView):
         """
         Docstring for get
         """
-        party = PartyModel.objects.get(id=id)
+        party = get_object_or_404(PartyModel, id=id)
         serializer = PartyRegistrationSerializer(party)
-        if serializer.is_valid():
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)
