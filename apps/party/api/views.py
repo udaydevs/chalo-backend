@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from apps.party.api.serializers import JoinPartySerializer, PartyRegistrationSerializer
-
+from apps.party.models import Party as PartyModel
 
 class Party(APIView):
     """
@@ -76,7 +76,7 @@ class PartyInfo(APIView):
         """
         Docstring for get
         """
-        party = Party.objects.get(id=id)
+        party = PartyModel.objects.get(id=id)
         serializer = PartyRegistrationSerializer(party)
         if serializer.is_valid():
             return Response(serializer.data, status=status.HTTP_201_CREATED)
