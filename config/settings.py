@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
     "apps.users",
     "apps.party",
-    "sslserver",
 ]
 
 
