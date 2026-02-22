@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
     "apps.users",
     "apps.party",
+    "sslserver",
 ]
 
 
@@ -186,7 +187,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOWED_ORIGINS = [
     "https://chalo.aadijain.dev",
     "http://localhost:3000",
-    "http://192.168.1.23:3000",
+    "http://192.168.1.18:3000",
     "https://6ff147c71172.ngrok-free.app",
     "https://chalo-ten.vercel.app"
 ]

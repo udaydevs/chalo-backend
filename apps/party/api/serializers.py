@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 from apps.party.models import Party, PartyMembers
+from apps.users.api.serializers import CustomUser, UserSerializer
 
 class PartyRegistrationSerializer(serializers.ModelSerializer):
     """This serializer is for the creation of party"""
@@ -86,11 +87,29 @@ class JoinPartySerializer(serializers.ModelSerializer):
 
         if PartyMembers.objects.filter(Q(member=user)|Q( party__leader=user)).exists():
             raise serializers.ValidationError("Already joined this party")
-        self.context["code"] = party
+        self.context["party"] = party
         return value
 
     def create(self, validated_data):
         return PartyMembers.objects.create(
             party=self.context["party"],
             member=self.context["request"].user
+        )
+class LeaderMiniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ("id", "username", "email")
+class PartyInfoSerializer(serializers.ModelSerializer):
+    leader = LeaderMiniSerializer(read_only=True)
+
+    class Meta:
+        model = Party
+        fields = (
+            "id",
+            "name",
+            "leader",
+            "duration",
+            "code",
+            "created_at",
+            "expires_at",
         )
